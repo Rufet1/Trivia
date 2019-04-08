@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html lang="en-us">
+
+  <head>
+
+    <meta charset="UTF-8">
+    <title>Totally Trivial Trivia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+
+  <body>
+
+    <div id="a">
+      <h1>Totally Trivial Trivia!</h1>
+      <div id="b">
+        <div id="quiz-area">
+          <button id="start">Start</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+
+var panel = $("#quiz-area");
+var countStartNumber = 30;
+var questions = [{
+  question: "Which of Team is Spain Team?",
+  answers: ["ATL.Madrid", "Juventus", "Ajax", "Porto"],
+  correctAnswer: "ATL.Madrid",
+  image: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f4/Atletico_Madrid_2017_logo.svg/1200px-Atletico_Madrid_2017_logo.svg.png"
+}, {
+  question: "Which of this player from Portugal",
+  answers: ["Cristiano Ronaldo", "Casillas", "Efran Ismayilov :D", "Puyol"],
+  correctAnswer: "Cristiano Ronaldo",
+  image: "https://clipart.info/images/ccovers/1547069464Cristiano-Ronaldo-Juventus-Png-2019.png"
+}, {
+  question: "Which team is most won Champions League?",
+  answers: ["AC Milan", "Juventus", "Real Madrid", "Barcelona"],
+  correctAnswer: "Real Madrid",
+  image: "https://worldsportlogos.com/wp-content/uploads/2018/01/Real-Madrid-logo.png"
+},
+{
+  question: "How many red card will be lost the team?",
+  answers: ["4", "5", "3", "6"],
+  correctAnswer: "5",
+  image: "https://banner2.kisspng.com/20180626/afo/kisspng-red-card-yellow-card-credit-card-association-footb-5b3284f56d8bc2.8815497515300374934487.jpg"
+},
+{
+  question: "Most expensive player in the history?",
+  answers: ["Neymar", "Ronaldo", "Messi", "Ibrahimovic"],
+  correctAnswer: "Neymar",
+  image: "https://www.freeiconspng.com/uploads/neymar-football-render-transparent-15.png"
+},
+{
+  question: "Which team consecutive 3 times Champions League?",
+  answers: ["Real Madrid", "Juventus", "Man. United", "Barcelona"],
+  correctAnswer: "Real Madrid",
+  image: "https://worldsportlogos.com/wp-content/uploads/2018/01/Real-Madrid-logo.png"
+},
+{
+  question: "Muhammed Salah has never played in any team?",
+  answers: ["Chelsea", "Liverpool", "Fiorentina", "Bordoeaux"],
+  correctAnswer: "Bordoeaux",
+  image: "https://upload.wikimedia.org/wikipedia/tr/e/e9/FC_Girondins_de_Bordeaux.png"
+},
+];
+var timer;
+
+var game = {
+
+  questions: questions,
+  currentQuestion: 0,
+  counter: countStartNumber,
+  correct: 0,
+  incorrect: 0,
+
+  countdown: function() {
+    game.counter--;
+    $("#counter-number").html(game.counter);
+    if (game.counter === 0) {;
+      game.timeUp();
+    }
+  },
+
+  loadQuestion: function() {
+
+    timer = setInterval(game.countdown, 1000);
+
+    panel.html("<h2>" + questions[this.currentQuestion].question + "</h2>");
+
+    for (var i = 0; i < questions[this.currentQuestion].answers.length; i++) {
+      panel.append("<button class='answer-button' id='button' data-name='" + questions[this.currentQuestion].answers[i]
+      + "'>" + questions[this.currentQuestion].answers[i] + "</button>");
+    }
+  },
+
+  nextQuestion: function() {
+    game.counter = countStartNumber;
+    $("#counter-number").text(game.counter);
+    game.currentQuestion++;
+    game.loadQuestion();
+  },
+
+  timeUp: function() {
+
+    clearInterval(timer);
+
+    $("#counter-number").html(game.counter);
+
+    panel.html("<h2>Out of Time!</h2>");
+    panel.append("<h3>The Correct Answer was: " + questions[this.currentQuestion].correctAnswer);
+    panel.append("<img src='" + questions[this.currentQuestion].image + "' />");
+
+    if (game.currentQuestion === questions.length - 1) {
+      setTimeout(game.results, 3 * 1000);
+    }
+    else {
+      setTimeout(game.nextQuestion, 3 * 1000);
+    }
+  },
+
+  results: function() {
+
+    clearInterval(timer);
+
+    panel.html("<h2>All done, heres how you did!</h2>");
+
+    $("#counter-number").text(game.counter);
+
+    panel.append("<h3>Correct Answers: " + game.correct + "</h3>");
+    panel.append("<h3>Incorrect Answers: " + game.incorrect + "</h3>");
+    panel.append("<h3>Unanswered: " + (questions.length - (game.incorrect + game.correct)) + "</h3>");
+    panel.append("<br><button id='start-over'>Start Over?</button>");
+  },
+
+  clicked: function(e) {
+    clearInterval(timer);
+    if ($(e.target).attr("data-name") === questions[this.currentQuestion].correctAnswer) {
+      this.answeredCorrectly();
+    }
+    else {
+      this.answeredIncorrectly();
+    }
+  },
+  answeredIncorrectly: function() {
+    game.incorrect++;
+    clearInterval(timer);
+    panel.html("<h2>Nope!</h2>");
+    panel.append("<h3>The Correct Answer was: " + questions[game.currentQuestion].correctAnswer + "</h3>");
+    panel.append("<img src='" + questions[game.currentQuestion].image + "' />");
+
+    if (game.currentQuestion === questions.length - 1) {
+      setTimeout(game.results, 3 * 1000);
+    }
+    else {
+      setTimeout(game.nextQuestion, 3 * 1000);
+    }
+  },
+  answeredCorrectly: function() {
+    clearInterval(timer);
+    game.correct++;
+    panel.html("<h2>Correct!</h2>");
+    panel.append("<img src='" + questions[game.currentQuestion].image + "' />");
+    if (game.currentQuestion === questions.length - 1) {
+      setTimeout(game.results, 3 * 1000);
+    }
+    else {
+      setTimeout(game.nextQuestion, 3 * 1000);
+    }
+  },
+  reset: function() {
+    this.currentQuestion = 0;
+    this.counter = countStartNumber;
+    this.correct = 0;
+    this.incorrect = 0;
+    this.loadQuestion();
+  }
+};
+$(document).on("click", "#start-over", function() {
+  game.reset();
+});
+$(document).on("click", ".answer-button", function(e) {
+  game.clicked(e);
+});
+$(document).on("click", "#start", function() {
+  $("#b").prepend("<h2>Time : <span id='counter-number'>30</span> Seconds</h2>");
+  game.loadQuestion();
+});
+
+    </script>
+</body>
+</html>
